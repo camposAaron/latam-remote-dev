@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int        @id @default(autoincrement())
+  email       String
+  password    String
+  role        UserRole
+  developerId Int?       @unique
+  companyId   Int?       @unique
+  Developer   Developer? @relation(fields: [developerId], references: [id])
+  company     Company?   @relation(fields: [companyId], references: [id])
+  roleId      Int?
+}
+
+model Developer {
+  id             Int              @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  title          String
+  about          String?
+  country        String
+  city           String
+  address        String
+  cvUrl          String
+  github         String?
+  linkedin       String?
+  website        String?
+  picture        String?
+  email          String
+  telephone      String
+  DeveloperSkill DeveloperSkill[]
+  Education      Education[]
+  JobExperience  JobExperience[]
+  Postulation    Postulation[]
+  User           User?
+}
+
+model DeveloperSkill {
+  id                Int       @id @default(autoincrement())
+  developer         Developer @relation(fields: [developerId], references: [id])
+  skill             Skill     @relation(fields: [skillId], references: [id])
+  yearsOfExperience String
+  developerId       Int
+  skillId           Int
+}
+
+model Skill {
+  id             Int              @id @default(autoincrement())
+  name           String
+  DeveloperSkill DeveloperSkill[]
+  JobOfferSkill  JobOfferSkill[]
+}
+
+model Education {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  developer   Developer @relation(fields: [developerId], references: [id])
+  developerId Int
+}
+
+model Company {
+  id            Int             @id @default(autoincrement())
+  name          String
+  email         String
+  about         String
+  address       String
+  telephone     String
+  website       String
+  linkedin      String
+  totalEmployes Int
+  logo          String?
+  jobExperience JobExperience[]
+  JobOffer      JobOffer[]
+  User          User?
+}
+
+model JobExperience {
+  id          Int       @id @default(autoincrement())
+  position    String
+  companyName String?
+  company     Company?  @relation(fields: [companyId], references: [id])
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  location    String?
+  developer   Developer @relation(fields: [developerId], references: [id])
+  companyId   Int?
+  developerId Int
+}
+
+model JobOffer {
+  id            Int             @id @default(autoincrement())
+  description   String
+  maxSalary     Float?
+  minSalary     Float?
+  state         OfferState
+  company       Company         @relation(fields: [companyId], references: [id])
+  JobOfferSkill JobOfferSkill[]
+  Postulation   Postulation[]
+  companyId     Int
+}
+
+model JobOfferSkill {
+  id         Int      @id @default(autoincrement())
+  job        JobOffer @relation(fields: [jobOfferId], references: [id])
+  skill      Skill    @relation(fields: [skillId], references: [id])
+  jobOfferId Int
+  skillId    Int
+}
+
+model Postulation {
+  id              Int       @id @default(autoincrement())
+  postulationDate DateTime
+  state           String
+  developer       Developer @relation(fields: [developerId], references: [id])
+  jobOffer        JobOffer  @relation(fields: [jobOfferId], references: [id])
+  developerId     Int
+  jobOfferId      Int
+}
+
+enum UserRole {
+  Developer
+  Employeer
+}
+
+enum OfferState {
+  Opened
+  Closed
+}
