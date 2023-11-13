@@ -12,11 +12,10 @@ export interface IGrantedAccess {
       country: string;
       city: string;
       address: string;
-      cvUrl: string;
+      cvUrl?: string;
       github: string;
       linkedin: string;
       website: string;
-      picture: string;
       email: string;
       telephone: string;
     };

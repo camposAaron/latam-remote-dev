@@ -19,7 +19,6 @@ model User {
   companyId   Int?       @unique
   Developer   Developer? @relation(fields: [developerId], references: [id])
   company     Company?   @relation(fields: [companyId], references: [id])
-  roleId      Int?
 }
 
 model Developer {
@@ -31,11 +30,10 @@ model Developer {
   country        String
   city           String
   address        String
-  cvUrl          String
+  cvUrl          String?
   github         String?
   linkedin       String?
   website        String?
-  picture        String?
   email          String
   telephone      String
   DeveloperSkill DeveloperSkill[]
@@ -49,14 +47,14 @@ model DeveloperSkill {
   id                Int       @id @default(autoincrement())
   developer         Developer @relation(fields: [developerId], references: [id])
   skill             Skill     @relation(fields: [skillId], references: [id])
-  yearsOfExperience String
+  yearsOfExperience Int?
   developerId       Int
   skillId           Int
 }
 
 model Skill {
   id             Int              @id @default(autoincrement())
-  name           String
+  name           String //save in lowercase
   DeveloperSkill DeveloperSkill[]
   JobOfferSkill  JobOfferSkill[]
 }

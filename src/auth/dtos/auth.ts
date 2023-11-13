@@ -5,6 +5,7 @@ export class AuthDto {
   @ApiProperty({
     description: 'Email del usuario',
     type: String,
+    example: 'campos.aaron.15@gmail.com'
   })
   @IsString()
   @IsNotEmpty()
@@ -15,6 +16,7 @@ export class AuthDto {
     description: 'Password del usuario',
     minLength: 6,
     type: String,
+    example: '123456'
   })
   @IsString()
   @IsNotEmpty()
