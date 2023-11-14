@@ -125,13 +125,24 @@ export class DeveloperService {
       }
     });
 
+    await this.prismaService.education.deleteMany({
+      where: { developerId: id },
+    });
+
+    await this.prismaService.jobExperience.deleteMany({
+      where: { developerId: id },
+    });
+
+    await this.prismaService.developerSkill.deleteMany({
+      where: { developerId: id },
+    })
+
     const developer = await this.prismaService.developer.update({
       where: { id },
       data: {
         ...rest,
         Education: {
-          updateMany: {
-            where: { developerId: id },
+          createMany: {
             data: Education.map((education) => ({
               startDate: new Date(education.startDate),
               endDate: new Date(education.endDate),
@@ -141,8 +152,7 @@ export class DeveloperService {
           },
         },
         JobExperience: {
-          updateMany: {
-            where: { developerId: id },
+          createMany: {
             data: JobExperience.map((jobExperience) => ({
               location: jobExperience.location,
               description: jobExperience.description,
@@ -170,8 +180,8 @@ export class DeveloperService {
     }
 
     //conect skillIds to developerSkills
-    await this.prismaService.developerSkill.updateMany({
-      where: { developerId: id },
+     //conect skillIds to developerSkills
+    await this.prismaService.developerSkill.createMany({
       data: skillsIds.map((skillId) => ({
         skillId,
         developerId: developer.id,

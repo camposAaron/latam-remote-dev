@@ -50,7 +50,7 @@ export class DeveloperController {
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateDeveloperDto: UpdateDeveloperDto,
   ) {
     return this.developerService.update(+id, updateDeveloperDto);
@@ -74,6 +74,7 @@ export class DeveloperController {
       },
     },
   })
+
   @ApiParam({ name: 'developerId', type: 'number' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadCv(
