@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DeveloperModule } from './developer/developer.module';
+import { CommomModule } from './commom/commom.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DeveloperModule } from './developer/developer.module';
       isGlobal: true,
     }),
     DeveloperModule,
+    CommomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
