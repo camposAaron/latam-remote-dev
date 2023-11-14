@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ParseIntPipe } from '@nestjs/common';
 import { CreateDeveloperDto } from './dto/create-developer-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';

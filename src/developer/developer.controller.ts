@@ -17,6 +17,8 @@ import { JwtGuard } from 'src/auth/guard/jwt';
 import { GetUser } from 'src/auth/decorator/get-user-decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/commom/services/CloudinaryService';
+import { UpdateDeveloperDto } from './dto/update-developer.dto';
+import { ApiConsumes, ApiBody, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Developer')
 @Controller('developer')
@@ -46,23 +48,40 @@ export class DeveloperController {
     return this.developerService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateDeveloperDto: UpdateDeveloperDto) {
-  //   return this.developerService.update(+id, updateDeveloperDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateDeveloperDto: UpdateDeveloperDto,
+  ) {
+    return this.developerService.update(+id, updateDeveloperDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.developerService.remove(+id);
   }
 
-  @Post('upload-cv')
+  @Post('upload-cv/:developerId')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiParam({ name: 'developerId', type: 'number' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadCv(
     @UploadedFile() file: Express.Multer.File,
-    @Param('developerId') id: string,
+    @Param('developerId') id: number,
   ) {
     const result = await this.cloudinaryService.upload(file);
-    return this.developerService.updateCv(+id, result.secure_url);
+    const response = await  this.developerService.updateCv(+id, result.secure_url);
+    return response;
   }
 }
