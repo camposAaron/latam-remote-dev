@@ -178,7 +178,7 @@ export class DeveloperService {
       })),
     });
 
-    return
+    return;
   }
 
   remove(id: number) {
