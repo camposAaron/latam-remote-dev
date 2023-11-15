@@ -47,8 +47,9 @@ export class CreateJobExperienceDto {
   @ApiProperty({
     description: 'Id de la compañia',
     type: Number,
+    required: false
   })
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   companyId?: string;
 }

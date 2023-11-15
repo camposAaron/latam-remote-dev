@@ -33,6 +33,21 @@ export class AuthService {
     return user;
   }
 
+  async updateUserPhopo(userId: number, photoUrl: string) {
+    const user = await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        pictureUrl: photoUrl,
+      },
+    });
+
+    const { password, ...rest } = user;
+
+    return rest;
+  }
+
   async login(authDto: AuthDto): Promise<IGrantedAccess> {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -40,7 +55,7 @@ export class AuthService {
       },
       include: {
         company: true,
-        Developer: true
+        Developer: true,
       },
     });
 
@@ -59,26 +74,27 @@ export class AuthService {
     let response: IGrantedAccess = {
       token,
       user: {
+        id: user.id,
         email: user.email,
         role: user.role,
       },
     };
-    
-    if(user.role === 'Developer'){
 
+    if (user.role === 'Developer') {
       response = {
         token,
         user: {
+          id: user.id,
           email: user.email,
           role: user.role,
           developer: user.Developer,
         },
       };
-    }else if(user.role === 'Employeer'){
-
+    } else if (user.role === 'Employeer') {
       response = {
         token,
         user: {
+          id: user.id,
           email: user.email,
           role: user.role,
           company: user.company,
@@ -86,7 +102,7 @@ export class AuthService {
       };
     }
 
-    return response
+    return response;
   }
 
   async register(registerDto: RegisterDto): Promise<IGrantedAccess> {
@@ -97,17 +113,18 @@ export class AuthService {
     const hashedPassword = await argon.hash(registerDto.password);
 
     const newUser = await this.prisma.user.create({
-      data:{
+      data: {
         email: registerDto.email,
         password: hashedPassword,
-        role: registerDto.role
-      }
-    })
+        role: registerDto.role,
+      },
+    });
     const token = await this.signToken(newUser.id, newUser.email);
-    
+
     return {
       token,
       user: {
+        id: newUser.id,
         email: newUser.email,
         role: newUser.role,
       },

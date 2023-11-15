@@ -1,6 +1,7 @@
 export interface IGrantedAccess {
   token: string;
   user: {
+    id: number;
     email: string;
     role: string;
     developer?: {

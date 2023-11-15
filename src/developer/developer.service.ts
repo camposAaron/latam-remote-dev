@@ -39,6 +39,7 @@ export class DeveloperService {
       Education: {
         createMany: {
           data: Education.map((education) => ({
+            institution: education.institution,
             startDate: new Date(education.startDate),
             endDate: new Date(education.endDate),
             description: education.description,
@@ -100,7 +101,26 @@ export class DeveloperService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} developer`;
+    const developer = await this.prismaService.developer.findUnique({
+      where: { id },
+      include: {
+        DeveloperSkill: {
+          select: {
+            id: true,
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        Education: true,
+        JobExperience: true,
+      },
+    });
+
+    return developer;
   }
 
   async updateCv(id: number, cvUrl: string) {
@@ -135,7 +155,7 @@ export class DeveloperService {
 
     await this.prismaService.developerSkill.deleteMany({
       where: { developerId: id },
-    })
+    });
 
     const developer = await this.prismaService.developer.update({
       where: { id },
@@ -144,6 +164,7 @@ export class DeveloperService {
         Education: {
           createMany: {
             data: Education.map((education) => ({
+              institution: education.institution,
               startDate: new Date(education.startDate),
               endDate: new Date(education.endDate),
               description: education.description,
@@ -180,7 +201,7 @@ export class DeveloperService {
     }
 
     //conect skillIds to developerSkills
-     //conect skillIds to developerSkills
+    //conect skillIds to developerSkills
     await this.prismaService.developerSkill.createMany({
       data: skillsIds.map((skillId) => ({
         skillId,

@@ -5,7 +5,7 @@ export class CreateDeveloperSkillDto {
     @ApiProperty({
         description: 'Id de la habilidad',
         type: String,
-
+        required: false
     })
     @IsNumber()
     @IsOptional()
@@ -13,17 +13,10 @@ export class CreateDeveloperSkillDto {
     @ApiProperty({
         description: 'Nombre de la habilidad',
         type: String,
-        example: 'Javascript'
+        example: 'Javascript',
+        required: false
     })
     @IsString()
     @IsOptional()
-    skillName?: string 
-    @ApiProperty({
-        description: 'Años de experiencia',
-        type: Number,
-        example: 5
-    })
-    @IsNumber()
-    @IsOptional()
-    yearsOfExperience?: number;
+    skillName?: string
 }

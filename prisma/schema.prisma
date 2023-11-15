@@ -15,6 +15,7 @@ model User {
   email       String
   password    String
   role        UserRole
+  pictureUrl  String?
   developerId Int?       @unique
   companyId   Int?       @unique
   Developer   Developer? @relation(fields: [developerId], references: [id])
@@ -47,7 +48,6 @@ model DeveloperSkill {
   id                Int       @id @default(autoincrement())
   developer         Developer @relation(fields: [developerId], references: [id])
   skill             Skill     @relation(fields: [skillId], references: [id])
-  yearsOfExperience Int?
   developerId       Int
   skillId           Int
 }
@@ -61,6 +61,7 @@ model Skill {
 
 model Education {
   id          Int       @id @default(autoincrement())
+  institution String?
   title       String
   description String
   startDate   DateTime

@@ -10,6 +10,14 @@ export class CreateEducationDto {
   })
   @IsString()
   title: string;
+
+  @ApiProperty({
+    description: "Institucion de estudio",
+    type: String,
+    example: 'UNI'
+  })
+  @IsString()
+  institution: string;
   @ApiProperty({
     description: "Descripcion de la educación",
     type: String,

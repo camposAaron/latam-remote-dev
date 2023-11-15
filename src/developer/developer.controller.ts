@@ -38,16 +38,20 @@ export class DeveloperController {
     return this.developerService.create(createDeveloperDto, id);
   }
 
-  @Get()
-  findAll() {
-    return this.developerService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.developerService.findAll();
+  // }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.developerService.findOne(+id);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Patch(':id')
   update(
     @Param('id') id: number,
@@ -56,11 +60,13 @@ export class DeveloperController {
     return this.developerService.update(+id, updateDeveloperDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.developerService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.developerService.remove(+id);
+  // }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Post('upload-cv/:developerId')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
