@@ -77,6 +77,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         role: user.role,
+        photoUrl: user.pictureUrl
       },
     };
 
@@ -87,6 +88,7 @@ export class AuthService {
           id: user.id,
           email: user.email,
           role: user.role,
+          photoUrl: user.pictureUrl,
           developer: user.Developer,
         },
       };
@@ -96,6 +98,7 @@ export class AuthService {
         user: {
           id: user.id,
           email: user.email,
+          photoUrl: user.pictureUrl,
           role: user.role,
           company: user.company,
         },

@@ -4,6 +4,7 @@ export interface IGrantedAccess {
     id: number;
     email: string;
     role: string;
+    photoUrl?: string;
     developer?: {
       id: number;
       firstName: string;
