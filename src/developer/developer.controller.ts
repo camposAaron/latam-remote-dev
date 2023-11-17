@@ -85,7 +85,7 @@ export class DeveloperController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadCv(
     @UploadedFile() file: Express.Multer.File,
-    @Param('developerId') id: number,
+    @Param('developerId ') id: number,
   ) {
     const result = await this.cloudinaryService.upload(file);
     const response = await  this.developerService.updateCv(+id, result.secure_url);

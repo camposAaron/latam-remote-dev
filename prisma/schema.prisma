@@ -75,11 +75,11 @@ model Company {
   name          String
   email         String
   about         String
-  address       String
-  telephone     String
-  website       String
-  linkedin      String
-  totalEmployes Int
+  address       String?
+  telephone     String?
+  website       String?
+  linkedin      String?
+  totalEmployes Int?
   logo          String?
   jobExperience JobExperience[]
   JobOffer      JobOffer[]
