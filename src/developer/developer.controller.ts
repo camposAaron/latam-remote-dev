@@ -67,8 +67,9 @@ export class DeveloperController {
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
-  @Post('upload-cv/:developerId')
+  @ApiParam({ name: 'developerId' })
   @ApiConsumes('multipart/form-data')
+  @Post('upload-cv/:developerId')
   @ApiBody({
     schema: {
       type: 'object',
@@ -80,12 +81,10 @@ export class DeveloperController {
       },
     },
   })
-
-  @ApiParam({ name: 'developerId', type: 'number' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadCv(
     @UploadedFile() file: Express.Multer.File,
-    @Param('developerId ') id: number,
+    @Param('developerId') id: string,
   ) {
     const result = await this.cloudinaryService.upload(file);
     const response = await  this.developerService.updateCv(+id, result.secure_url);

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString } from "class-validator";
+import { IsDate, IsOptional, IsString } from "class-validator";
 
 
 export class CreateEducationDto {
@@ -35,8 +35,10 @@ export class CreateEducationDto {
   @ApiProperty({
     description: "Fecha de culminacion",
     type: Date,
-    example: '2021-09-01'
+    example: '2021-09-01',
+    required: false
   })
+  @IsOptional()
   @IsDate()
-  endDate: Date;
+  endDate?: Date;
 }

@@ -34,9 +34,11 @@ export class CreateJobExperienceDto {
     description: 'Fecha de culimacion de labores',
     type: Date,
     example: '2021-09-01',
+    required: false
   })
+  @IsOptional()
   @IsDate()
-  endDate: Date;
+  endDate?: Date;
   @ApiProperty({
     description: 'Direccion de la compañia',
     type: Date,

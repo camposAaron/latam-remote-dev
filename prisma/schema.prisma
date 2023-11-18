@@ -65,7 +65,7 @@ model Education {
   title       String
   description String
   startDate   DateTime
-  endDate     DateTime
+  endDate     DateTime?
   developer   Developer @relation(fields: [developerId], references: [id])
   developerId Int
 }
@@ -93,7 +93,7 @@ model JobExperience {
   company     Company?  @relation(fields: [companyId], references: [id])
   description String
   startDate   DateTime
-  endDate     DateTime
+  endDate     DateTime?
   location    String?
   developer   Developer @relation(fields: [developerId], references: [id])
   companyId   Int?
