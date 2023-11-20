@@ -1,11 +1,7 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -19,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { ValidationPipe } from 'src/commom/pipes/validation.pipe';
+import { GetUser } from 'src/auth/decorator/get-user-decorator';
 
 @ApiTags('Company')
 @Controller('company')
@@ -70,7 +67,7 @@ export class CompanyController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async create(@UploadedFile() file: Express.Multer.File, @Body() body) {
+  async create(@UploadedFile() file: Express.Multer.File, @Body() body, @GetUser('id') id: number) {
     const companyDtoInstance = plainToClass(CreateCompanyDto, JSON.parse(body.company));
 
     // Validate the DTO instance
@@ -81,7 +78,7 @@ export class CompanyController {
       console.log(errors);
     }
 
-    return this.companyService.create(companyDtoInstance, file);
+    return this.companyService.create(companyDtoInstance, file, id);
   }
 
   // @Get()

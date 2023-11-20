@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DeveloperModule } from './developer/developer.module';
 import { CommonModule } from './commom/commom.module';
 import { CompanyModule } from './company/company.module';
+import { JobOfferModule } from './job-offer/job-offer.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CompanyModule } from './company/company.module';
     DeveloperModule,
     CommonModule,
     CompanyModule,
+    JobOfferModule,
   ],
   controllers: [AppController],
   providers: [AppService],

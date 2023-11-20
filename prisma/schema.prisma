@@ -45,11 +45,11 @@ model Developer {
 }
 
 model DeveloperSkill {
-  id                Int       @id @default(autoincrement())
-  developer         Developer @relation(fields: [developerId], references: [id])
-  skill             Skill     @relation(fields: [skillId], references: [id])
-  developerId       Int
-  skillId           Int
+  id          Int       @id @default(autoincrement())
+  developer   Developer @relation(fields: [developerId], references: [id])
+  skill       Skill     @relation(fields: [skillId], references: [id])
+  developerId Int
+  skillId     Int
 }
 
 model Skill {
@@ -102,14 +102,17 @@ model JobExperience {
 
 model JobOffer {
   id            Int             @id @default(autoincrement())
+  title         String
   description   String
   maxSalary     Float?
   minSalary     Float?
+  vacancies     Int?
   state         OfferState
   company       Company         @relation(fields: [companyId], references: [id])
   JobOfferSkill JobOfferSkill[]
   Postulation   Postulation[]
   companyId     Int
+  createdAt    DateTime        @default(now())
 }
 
 model JobOfferSkill {
@@ -123,7 +126,7 @@ model JobOfferSkill {
 model Postulation {
   id              Int       @id @default(autoincrement())
   postulationDate DateTime
-  state           String
+  state           PostulationState
   developer       Developer @relation(fields: [developerId], references: [id])
   jobOffer        JobOffer  @relation(fields: [jobOfferId], references: [id])
   developerId     Int
@@ -138,4 +141,10 @@ enum UserRole {
 enum OfferState {
   Opened
   Closed
+}
+
+enum PostulationState {
+  Pending
+  Accepted
+  Rejected
 }

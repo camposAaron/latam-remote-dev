@@ -11,17 +11,31 @@ export class CompanyService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto, file: Express.Multer.File) {
-
+  async create(
+    createCompanyDto: CreateCompanyDto,
+    file: Express.Multer.File,
+    userId: number,
+  ) {
     const imageUrl = await this.cloudinaryService.upload(file);
     const company = await this.prismaService.company.create({
       data: {
         ...createCompanyDto,
-        logo: imageUrl.secure_url
-      }
-    })
+        logo: imageUrl.secure_url,
+      },
+    });
 
-    return company;
+    const user = await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        companyId: company.id,
+        role: 'Employeer',
+      },
+      include: {
+        company: true,
+      },
+    });
+
+    return user;
   }
 
   findAll() {

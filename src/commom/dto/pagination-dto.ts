@@ -6,24 +6,25 @@ export class PaginationDto {
   @ApiProperty({
     type: Number,
     description: 'Numero de elementos que quieres que se muestren',
-    example: 0,
+    example: 10,
   })
   @IsOptional()
   @IsInt()
-  @Min(0)
+  @Min(10)
+  @IsPositive()
   @Type(() => Number)
   limit?: number;
 
   @ApiProperty({
     type: Number,
-    example: 10,
+    example: 0,
     default: 100,
     description:
       'Numero de elementos que quieres que se salten desde el inicio',
   })
   @IsOptional()
   @IsInt()
-  @IsPositive()
+  @Min(0)
   @Type(() => Number)
   offset?: number;
 }
