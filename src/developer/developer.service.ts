@@ -53,7 +53,9 @@ export class DeveloperService {
             location: jobExperience.location,
             description: jobExperience.description,
             startDate: new Date(jobExperience.startDate),
-            endDate: jobExperience.endDate ? new Date(jobExperience.endDate) : null,
+            endDate: jobExperience.endDate
+              ? new Date(jobExperience.endDate)
+              : null,
             position: jobExperience.position,
             companyName: jobExperience.companyName,
           })),
@@ -91,9 +93,47 @@ export class DeveloperService {
     const { password, ...userRest } = await this.prismaService.user.update({
       where: { id: userId },
       data: { developerId: developer.id },
+      include: {
+        Developer: {
+          include: {
+            DeveloperSkill: {
+              select: {
+                id: true,
+                skill: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            Education: {
+              select: {
+                id: true,
+                institution: true,
+                startDate: true,
+                endDate: true,
+                description: true,
+                title: true,
+              },
+            },
+            JobExperience: {
+              select: {
+                id: true,
+                location: true,
+                description: true,
+                startDate: true,
+                endDate: true,
+                position: true,
+                companyName: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return userRest;
+    return userRest.Developer;
   }
 
   findAll() {
@@ -145,16 +185,49 @@ export class DeveloperService {
       }
     });
 
-    await this.prismaService.education.deleteMany({
-      where: { developerId: id },
-    });
+    await Promise.all([
+      this.prismaService.education.deleteMany({
+        where: { developerId: id },
+      }),
+      this.prismaService.jobExperience.deleteMany({
+        where: { developerId: id },
+      }),
+      this.prismaService.developerSkill.deleteMany({
+        where: { developerId: id },
+      }),
+    ]);
 
-    await this.prismaService.jobExperience.deleteMany({
-      where: { developerId: id },
-    });
+    // await this.prismaService.education.deleteMany({
+    //   where: { developerId: id },
+    // });
 
-    await this.prismaService.developerSkill.deleteMany({
-      where: { developerId: id },
+    // await this.prismaService.jobExperience.deleteMany({
+    //   where: { developerId: id },
+    // });
+
+    // await this.prismaService.developerSkill.deleteMany({
+    //   where: { developerId: id },
+    // });
+    //add skills that not exist
+    if (skillsNames.length > 0) {
+      const createdSkill = await this.prismaService.$transaction(
+        skillsNames.map((skillName) =>
+          this.prismaService.skill.create({ data: { name: skillName } }),
+        ),
+      );
+
+      const skillsidsCreated = createdSkill.map((skill) => skill.id);
+
+      skillsIds = skillsIds.concat(skillsidsCreated.map((id) => id));
+    }
+
+    //conect skillIds to developerSkills
+    //conect skillIds to developerSkills
+    await this.prismaService.developerSkill.createMany({
+      data: skillsIds.map((skillId) => ({
+        skillId,
+        developerId: id
+      })),
     });
 
     const developer = await this.prismaService.developer.update({
@@ -178,38 +251,52 @@ export class DeveloperService {
               location: jobExperience.location,
               description: jobExperience.description,
               startDate: new Date(jobExperience.startDate),
-              endDate: jobExperience.endDate ? new Date(jobExperience.endDate) : null,
+              endDate: jobExperience.endDate
+                ? new Date(jobExperience.endDate)
+                : null,
               position: jobExperience.position,
               companyName: jobExperience.companyName,
             })),
           },
         },
       },
+      include: {
+        DeveloperSkill: {
+          select: {
+            id: true,
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        Education: {
+          select: {
+            id: true,
+            institution: true,
+            startDate: true,
+            endDate: true,
+            description: true,
+            title: true,
+          },
+        },
+        JobExperience: {
+          select: {
+            id: true,
+            location: true,
+            description: true,
+            startDate: true,
+            endDate: true,
+            position: true,
+            companyName: true,
+          },
+        },
+      },
     });
 
-    //add skills that not exist
-    if (skillsNames.length > 0) {
-      const createdSkill = await this.prismaService.$transaction(
-        skillsNames.map((skillName) =>
-          this.prismaService.skill.create({ data: { name: skillName } }),
-        ),
-      );
-
-      const skillsidsCreated = createdSkill.map((skill) => skill.id);
-
-      skillsIds = skillsIds.concat(skillsidsCreated.map((id) => id));
-    }
-
-    //conect skillIds to developerSkills
-    //conect skillIds to developerSkills
-    await this.prismaService.developerSkill.createMany({
-      data: skillsIds.map((skillId) => ({
-        skillId,
-        developerId: developer.id,
-      })),
-    });
-
-    return 'Datos actualizados con exito!';
+    return developer;
   }
 
   remove(id: number) {
