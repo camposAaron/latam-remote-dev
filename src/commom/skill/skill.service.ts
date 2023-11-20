@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateSkillDto } from '../dto/create-skill-dto';
 
 @Injectable()
 export class SkillService {
@@ -21,5 +22,21 @@ export class SkillService {
     });
 
     return skills;
+  }
+
+  async createSkill(dto: CreateSkillDto) {
+    const createdSkills = [];
+
+    for (const skillName of dto.skills) {
+      const createdSkill = await this.prismaService.skill.create({
+        data: {
+          name: skillName,
+        },
+      });
+
+      createdSkills.push(createdSkill);
+    }
+
+    return createdSkills;
   }
 }
