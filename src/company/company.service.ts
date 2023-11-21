@@ -7,13 +7,23 @@ import { PaginateFunction, paginator } from 'src/commom/utils/pagination';
 
 const paginate: PaginateFunction = paginator({ perPage: 10 });
 
-
 @Injectable()
 export class CompanyService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
+
+  async getPostulationsByJobOffer(jobOfferId: number, userId: number, page: number) {
+    const postulations = await this.prismaService.postulation.findMany({
+      where: { jobOfferId },
+      include: {
+        developer: true,
+      },
+    });
+
+    return postulations;
+  }
 
   async create(
     createCompanyDto: CreateCompanyDto,
@@ -48,21 +58,20 @@ export class CompanyService {
 
   async findOne(id: number) {
     const company = await this.prismaService.company.findUnique({
-      where: { id }
-    })
+      where: { id },
+    });
 
-    if(!company) throw { statusCode: 404, message: 'Company not found' }
+    if (!company) throw { statusCode: 404, message: 'Company not found' };
 
-    return company
+    return company;
   }
 
   async getJobOffers(userId: number, page: number) {
-    
     const user = await this.prismaService.user.findUnique({
-      where: { id: userId }
-    })
+      where: { id: userId },
+    });
 
-    if(!user) throw { statusCode: 404, message: 'User not found' }
+    if (!user) throw { statusCode: 404, message: 'User not found' };
 
     return paginate(
       this.prismaService.jobOffer,
@@ -76,16 +85,40 @@ export class CompanyService {
                 select: {
                   id: true,
                   name: true,
-                }
-              }
+                },
+              },
             },
-          }
-        }
+          },
+        },
       },
       {
-        page
-      }
-    )
+        page,
+      },
+    );
+  }
+
+  async getPostulationByJobOfferId(jobOfferId: number, userId: number, page: number) {
+
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    }); 
+
+    if(!user) throw { statusCode: 404, message: 'User not found' };
+
+    if(user.role !== 'Employeer') throw { statusCode: 403, message: 'You are not allowed to access this resource' };
+
+    return paginate(
+      this.prismaService.postulation,
+      {
+        where: { jobOfferId },
+        include: {
+          developer: true,
+        },
+      },
+      {
+        page,
+      },
+    );
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {

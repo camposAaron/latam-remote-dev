@@ -91,12 +91,23 @@ export class CompanyController {
 
     return this.companyService.create(companyDtoInstance, file, id);
   }
-  
+
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Get('/jobOffers')
   findAll(@Query() pagination: PaginationDto, @GetUser('id') id: number) {
     return this.companyService.getJobOffers(id, pagination.page);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get('/postulation/:jobOfferId')
+  getPostulations(
+    @Param('jobOfferId') jobOfferId: number,
+    @Query() pagination: PaginationDto,
+    @GetUser('id') userId: number,
+  ) {
+    return this.companyService.getPostulationByJobOfferId(jobOfferId, userId, pagination.page);
   }
 
   @ApiBearerAuth()
