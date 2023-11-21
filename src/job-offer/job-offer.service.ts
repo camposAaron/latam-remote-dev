@@ -288,7 +288,11 @@ export class JobOfferService {
       },
       include: {
         developer: true,
-        jobOffer: true,
+        jobOffer: {
+          include: {
+            company: true,
+          }
+        },
       },
     });
 

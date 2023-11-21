@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsDate, IsDateString, IsEnum, IsNumber } from 'class-validator';
 
 export class CreatePostulationDto {
   @ApiProperty({
@@ -8,6 +8,7 @@ export class CreatePostulationDto {
     example: '2021-10-10',
     required: true,
   })
+  @IsDateString()
   postulationDate: Date;
 
   @ApiProperty({

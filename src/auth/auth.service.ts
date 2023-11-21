@@ -55,7 +55,28 @@ export class AuthService {
       },
       include: {
         company: true,
-        Developer: true,
+        Developer: {
+          include: {
+            DeveloperSkill: {
+              select: {
+                id: true,
+                skill: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            Education: true,
+            JobExperience: true,
+            Postulation: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -77,7 +98,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         role: user.role,
-        photoUrl: user.pictureUrl
+        photoUrl: user.pictureUrl,
       },
     };
 
