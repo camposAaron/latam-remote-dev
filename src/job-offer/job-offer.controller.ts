@@ -46,6 +46,9 @@ export class JobOfferController {
     @Query() pagination: PaginationDto,
     @Query() filter: FilterReservationDto,
   ) {
+    if(filter.skillsIds?.length > 0){
+      return this.jobOfferService.findOffersBySkillsIds(filter.skillsIds)
+    }
     return this.jobOfferService.findOffersPublic(pagination.page, filter);
   }
 

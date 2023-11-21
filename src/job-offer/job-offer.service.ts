@@ -95,11 +95,43 @@ export class JobOfferService {
     return jobOfffer;
   }
 
+
+  async findOffersBySkillsIds (skillsIds: number[]) {
+    const offers = await this.prismaService.jobOffer.findMany({
+      where: {
+        state: 'Opened',
+        JobOfferSkill: {
+          some: {
+            skillId: {
+              in: skillsIds,
+            },
+          },
+        },
+      }
+    });
+
+    return offers;
+  }
+
   async findOffersPublic(
     page: number,
     filter: FilterReservationDto,
   ): Promise<PaginatedResult<JobOffer>> {
-    const where: Prisma.JobOfferWhereInput = {
+    let where: Prisma.JobOfferWhereInput = {};
+
+    // if (filter.skillsIds?.length > 0) {
+    //   where = {
+    //     state: 'Opened',
+    //     JobOfferSkill: {
+    //       some: {
+    //         skillId: {
+    //           in: filter.skillsIds,
+    //         },
+    //       },
+    //     },
+    //   };
+    // } else {
+    where = {
       state: 'Opened',
       OR: [
         {
@@ -123,6 +155,7 @@ export class JobOfferService {
           },
         },
       ],
+      // };
     };
 
     return paginate(
@@ -132,6 +165,20 @@ export class JobOfferService {
         orderBy: {
           createdAt: 'desc',
         },
+        include: {
+          JobOfferSkill: {
+            select: {
+              id: true,
+              skill: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          company: true,
+        }
       },
       {
         page,

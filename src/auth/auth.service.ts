@@ -72,7 +72,7 @@ export class AuthService {
             JobExperience: true,
             Postulation: {
               select: {
-                id: true,
+                jobOfferId: true
               },
             },
           },
