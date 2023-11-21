@@ -116,6 +116,7 @@ model JobOffer {
   JobOfferSkill JobOfferSkill[]
   Postulation   Postulation[]
   companyId     Int
+  isDeleted   Boolean         @default(false)
   createdAt     DateTime        @default(now())
 }
 

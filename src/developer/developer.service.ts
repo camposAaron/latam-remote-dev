@@ -169,7 +169,6 @@ export class DeveloperService {
         },
       },
     });
-
   }
 
   async findOne(id: number) {
@@ -196,6 +195,12 @@ export class DeveloperService {
   }
 
   async updateCv(id: number, cvUrl: string) {
+    const developer = await this.prismaService.developer.findUnique({
+      where: { id },
+    });
+
+    if (!developer) throw { statusCode: 404, message: 'Developer not found' };
+
     return this.prismaService.developer.update({
       where: { id },
       data: { cvUrl },
@@ -205,6 +210,12 @@ export class DeveloperService {
   async update(id: number, updateDeveloperDto: UpdateDeveloperDto) {
     const { DeveloperSkill, JobExperience, Education, ...rest } =
       updateDeveloperDto;
+
+    const existDev = await this.prismaService.developer.findUnique({
+      where: { id },
+    });
+
+    if (!existDev) throw { statusCode: 404, message: 'Developer not found' };
 
     let skillsIds = [];
     let skillsNames = [];
@@ -317,9 +328,5 @@ export class DeveloperService {
     });
 
     return developer;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} developer`;
   }
 }

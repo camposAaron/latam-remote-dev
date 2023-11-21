@@ -238,6 +238,8 @@ export class JobOfferService {
       },
     });
 
+    if (!offer) throw { statusCode: 404, message: 'Offer not found' };
+
     return offer;
   }
 
@@ -287,6 +289,8 @@ export class JobOfferService {
       },
     });
 
+    if (!jobOfffer) throw { statusCode: 404, message: 'Offer not found' };
+
     if (skillsName.length > 0) {
       const createdSkill = await this.prismaService.$transaction(
         skillsName.map((skillName) =>
@@ -326,8 +330,23 @@ export class JobOfferService {
     return jobOfffer;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} jobOffer`;
+  async remove(id: number) {
+    const offer = await this.prismaService.jobOffer.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!offer) throw { statusCode: 404, message: 'Offer not found' };
+
+    const offerUpdated = await this.prismaService.jobOffer.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    return offerUpdated;
   }
 
   async createPostulation(
@@ -345,8 +364,8 @@ export class JobOfferService {
       data: {
         jobOfferId: postulationDto.jobOfferId,
         developerId: postulationDto.developerId,
-        postulationDate: new Date(postulationDto.postulationDate),
-        state: postulationDto.state,
+        postulationDate: new Date(),
+        state: 'Pending',
       },
       include: {
         developer: true,
