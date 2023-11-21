@@ -7,6 +7,7 @@ import {
   UploadedFile,
   Get,
   Param,
+  Query,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -18,6 +19,7 @@ import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { ValidationPipe } from 'src/commom/pipes/validation.pipe';
 import { GetUser } from 'src/auth/decorator/get-user-decorator';
+import { PaginationDto } from 'src/commom/dto/pagination-dto';
 
 @ApiTags('Company')
 @Controller('company')
@@ -69,8 +71,15 @@ export class CompanyController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async create(@UploadedFile() file: Express.Multer.File, @Body() body, @GetUser('id') id: number) {
-    const companyDtoInstance = plainToClass(CreateCompanyDto, JSON.parse(body.company));
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body,
+    @GetUser('id') id: number,
+  ) {
+    const companyDtoInstance = plainToClass(
+      CreateCompanyDto,
+      JSON.parse(body.company),
+    );
 
     // Validate the DTO instance
     const errors = await validate(companyDtoInstance);
@@ -82,11 +91,13 @@ export class CompanyController {
 
     return this.companyService.create(companyDtoInstance, file, id);
   }
-
-  // @Get()
-  // findAll() {
-  //   return this.companyService.findAll();
-  // }
+  
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get('/jobOffers')
+  findAll(@Query() pagination: PaginationDto, @GetUser('id') id: number) {
+    return this.companyService.getJobOffers(id, pagination.page);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)

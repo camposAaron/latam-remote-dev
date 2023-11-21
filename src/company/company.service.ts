@@ -3,6 +3,10 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/commom/services/CloudinaryService';
+import { PaginateFunction, paginator } from 'src/commom/utils/pagination';
+
+const paginate: PaginateFunction = paginator({ perPage: 10 });
+
 
 @Injectable()
 export class CompanyService {
@@ -50,6 +54,38 @@ export class CompanyService {
     if(!company) throw { statusCode: 404, message: 'Company not found' }
 
     return company
+  }
+
+  async getJobOffers(userId: number, page: number) {
+    
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId }
+    })
+
+    if(!user) throw { statusCode: 404, message: 'User not found' }
+
+    return paginate(
+      this.prismaService.jobOffer,
+      {
+        where: { companyId: user.companyId },
+        include: {
+          JobOfferSkill: {
+            select: {
+              id: true,
+              skill: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              }
+            },
+          }
+        }
+      },
+      {
+        page
+      }
+    )
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {
