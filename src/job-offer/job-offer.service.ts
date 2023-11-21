@@ -95,35 +95,66 @@ export class JobOfferService {
     return jobOfffer;
   }
 
-  async findOffersBySkillsIds(skillsIds: number[]) {
-    const offers = await this.prismaService.jobOffer.findMany({
-      where: {
-        state: 'Opened',
-        JobOfferSkill: {
-          some: {
-            skillId: {
-              in: skillsIds.map((id) => Number(id)),
-            },
-          },
-        },
-      },
-      include: {
-        JobOfferSkill: {
-          select: {
-            id: true,
-            skill: {
-              select: {
-                id: true,
-                name: true,
+  async findOffersBySkillsIds(skillsIds: number[], page: number) {
+    // const offers = await this.prismaService.jobOffer.findMany({
+    //   where: {
+    //     state: 'Opened',
+    //     JobOfferSkill: {
+    //       some: {
+    //         skillId: {
+    //           in: skillsIds.map((id) => Number(id)),
+    //         },
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     JobOfferSkill: {
+    //       select: {
+    //         id: true,
+    //         skill: {
+    //           select: {
+    //             id: true,
+    //             name: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //     company: true,
+    //   }
+    // });
+
+    return paginate(
+      this.prismaService.jobOffer,
+      {
+        where: {
+          state: 'Opened',
+          JobOfferSkill: {
+            some: {
+              skillId: {
+                in: skillsIds.map((id) => Number(id)),
               },
             },
           },
         },
-        company: true,
-      }
-    });
-
-    return offers;
+        include: {
+          JobOfferSkill: {
+            select: {
+              id: true,
+              skill: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          company: true,
+        },
+      },
+      {
+        page,
+      },
+    );
   }
 
   async findOffersPublic(
