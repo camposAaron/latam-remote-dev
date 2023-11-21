@@ -234,6 +234,7 @@ export class JobOfferService {
             },
           },
         },
+        company: true,
       },
     });
 
