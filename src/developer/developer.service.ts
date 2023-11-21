@@ -154,6 +154,17 @@ export class DeveloperService {
       include: {
         jobOffer: {
           include: {
+            JobOfferSkill: {
+              select: {
+                id: true,
+                skill: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
             company: true,
           },
         },
