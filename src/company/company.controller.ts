@@ -8,6 +8,7 @@ import {
   Get,
   Param,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -20,6 +21,7 @@ import { validate } from 'class-validator';
 import { ValidationPipe } from 'src/commom/pipes/validation.pipe';
 import { GetUser } from 'src/auth/decorator/get-user-decorator';
 import { PaginationDto } from 'src/commom/dto/pagination-dto';
+import { UpdatePostulatioDto } from './dto/update-postulation.dto';
 
 @ApiTags('Company')
 @Controller('company')
@@ -107,7 +109,26 @@ export class CompanyController {
     @Query() pagination: PaginationDto,
     @GetUser('id') userId: number,
   ) {
-    return this.companyService.getPostulationByJobOfferId(jobOfferId, userId, pagination.page);
+    return this.companyService.getPostulationByJobOfferId(
+      jobOfferId,
+      userId,
+      pagination.page,
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Patch('/postulation/:postulationId')
+  updatePostulation(
+    @Param('postulationId') postulationId: number,
+    @Body() updatePostulationDto: UpdatePostulatioDto,
+    @GetUser('id') userId: number,
+  ) {
+    return this.companyService.updatePostulationStatus(
+      postulationId,
+      updatePostulationDto.state,
+      userId,
+    );
   }
 
   @ApiBearerAuth()

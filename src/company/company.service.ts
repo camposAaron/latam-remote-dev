@@ -14,7 +14,38 @@ export class CompanyService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async getPostulationsByJobOffer(jobOfferId: number, userId: number, page: number) {
+  async updatePostulationStatus(
+    postulationId: number,
+    status: 'Accepted' | 'Rejected' | 'Pending',
+    userId: number,
+  ) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw { statusCode: 404, message: 'User not found' };
+
+    if (user.role !== 'Employeer')
+      throw {
+        statusCode: 403,
+        message: 'You are not allowed to access this resource',
+      };
+
+    const postulation = await this.prismaService.postulation.update({
+      where: { id: postulationId },
+      data: {
+        state: status,
+      },
+    });
+
+    return postulation;
+  }
+
+  async getPostulationsByJobOffer(
+    jobOfferId: number,
+    userId: number,
+    page: number,
+  ) {
     const postulations = await this.prismaService.postulation.findMany({
       where: { jobOfferId },
       include: {
@@ -73,6 +104,8 @@ export class CompanyService {
 
     if (!user) throw { statusCode: 404, message: 'User not found' };
 
+    if(user.role !== 'Employeer') throw { statusCode: 403, message: 'You are not allowed to access this resource' }
+
     return paginate(
       this.prismaService.jobOffer,
       {
@@ -97,15 +130,22 @@ export class CompanyService {
     );
   }
 
-  async getPostulationByJobOfferId(jobOfferId: number, userId: number, page: number) {
-
+  async getPostulationByJobOfferId(
+    jobOfferId: number,
+    userId: number,
+    page: number,
+  ) {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
-    }); 
+    });
 
-    if(!user) throw { statusCode: 404, message: 'User not found' };
+    if (!user) throw { statusCode: 404, message: 'User not found' };
 
-    if(user.role !== 'Employeer') throw { statusCode: 403, message: 'You are not allowed to access this resource' };
+    if (user.role !== 'Employeer')
+      throw {
+        statusCode: 403,
+        message: 'You are not allowed to access this resource',
+      };
 
     return paginate(
       this.prismaService.postulation,
