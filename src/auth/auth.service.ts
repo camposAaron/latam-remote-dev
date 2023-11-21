@@ -14,6 +14,50 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
+  async deleteAccount(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('No estás logueado');
+    }
+
+    if (user.role === 'Developer') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isDeleted: true,
+          Developer: {
+            update: {
+              where: { User: {
+                id: userId,
+              } },
+              data: {
+                isDeleted: true,
+              },
+            },
+          },
+        },
+      });
+    } else if (user.role === 'Employeer') {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isDeleted: true,
+          company: {
+            update: {
+              data: {
+                isDeleted: true,
+              },
+            },
+          },
+        },
+      });
+    }
+
+    return 'Cuenta eliminada';
+  }
   async getMyInfo(userId: number): Promise<any> {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -72,7 +116,7 @@ export class AuthService {
             JobExperience: true,
             Postulation: {
               select: {
-                jobOfferId: true
+                jobOfferId: true,
               },
             },
           },
@@ -82,6 +126,10 @@ export class AuthService {
 
     if (!user) {
       throw new BadRequestException('Usuario o contraseña incorrectos');
+    }
+
+    if (user.isDeleted) {
+      throw new BadRequestException('Usuario no existe');
     }
 
     const passwordMatch = await argon.verify(user.password, authDto.password);

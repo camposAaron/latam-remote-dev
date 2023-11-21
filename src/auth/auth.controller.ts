@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -24,6 +25,14 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly cloudinaryService: CloudinaryService,
     ) {}
+
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Delete('deleteAccount')
+  deleteAccount(@GetUser('id') userId: number) {  
+    return this.authService.deleteAccount(userId);
+  }
 
   @Post('/login')
   async login(@Body() authDto: AuthDto) {

@@ -20,6 +20,8 @@ model User {
   companyId   Int?       @unique
   Developer   Developer? @relation(fields: [developerId], references: [id])
   company     Company?   @relation(fields: [companyId], references: [id])
+  createdAt   DateTime   @default(now())
+  isDeleted   Boolean    @default(false)
 }
 
 model Developer {
@@ -42,6 +44,7 @@ model Developer {
   JobExperience  JobExperience[]
   Postulation    Postulation[]
   User           User?
+  isDeleted      Boolean          @default(false)
 }
 
 model DeveloperSkill {
@@ -84,6 +87,7 @@ model Company {
   jobExperience JobExperience[]
   JobOffer      JobOffer[]
   User          User?
+  isDeleted     Boolean         @default(false)
 }
 
 model JobExperience {
@@ -112,7 +116,7 @@ model JobOffer {
   JobOfferSkill JobOfferSkill[]
   Postulation   Postulation[]
   companyId     Int
-  createdAt    DateTime        @default(now())
+  createdAt     DateTime        @default(now())
 }
 
 model JobOfferSkill {
@@ -124,11 +128,11 @@ model JobOfferSkill {
 }
 
 model Postulation {
-  id              Int       @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   postulationDate DateTime
   state           PostulationState
-  developer       Developer @relation(fields: [developerId], references: [id])
-  jobOffer        JobOffer  @relation(fields: [jobOfferId], references: [id])
+  developer       Developer        @relation(fields: [developerId], references: [id])
+  jobOffer        JobOffer         @relation(fields: [jobOfferId], references: [id])
   developerId     Int
   jobOfferId      Int
 }
