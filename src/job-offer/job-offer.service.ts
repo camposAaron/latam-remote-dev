@@ -95,18 +95,31 @@ export class JobOfferService {
     return jobOfffer;
   }
 
-
-  async findOffersBySkillsIds (skillsIds: number[]) {
+  async findOffersBySkillsIds(skillsIds: number[]) {
     const offers = await this.prismaService.jobOffer.findMany({
       where: {
         state: 'Opened',
         JobOfferSkill: {
           some: {
             skillId: {
-              in: skillsIds,
+              in: skillsIds.map((id) => Number(id)),
             },
           },
         },
+      },
+      include: {
+        JobOfferSkill: {
+          select: {
+            id: true,
+            skill: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        company: true,
       }
     });
 
@@ -178,7 +191,7 @@ export class JobOfferService {
             },
           },
           company: true,
-        }
+        },
       },
       {
         page,
