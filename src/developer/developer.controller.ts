@@ -47,7 +47,6 @@ export class DeveloperController {
     @Query() pagination: PaginationDto,
     @GetUser('id') id: number,
   ) {
-    console.log("dasd")
     return this.developerService.findAllPostulationByUserDeveloper(id, pagination.page);
   }
 

@@ -94,14 +94,5 @@ export class JobOfferController {
     return this.jobOfferService.createPostulation(createPostulationdto, id);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
-  @Get('/postulation')
-  getDeveloperPostulation(
-    @Body() createPostulationdto: CreatePostulationDto,
-    @GetUser('id') id: number,
-  ) {
-    return this.jobOfferService.createPostulation(createPostulationdto, id);
-  }
   
 }
