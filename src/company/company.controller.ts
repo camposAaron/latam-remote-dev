@@ -5,6 +5,8 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Get,
+  Param,
 } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -86,10 +88,12 @@ export class CompanyController {
   //   return this.companyService.findAll();
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.companyService.findOne(+id);
-  // }
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.companyService.findOne(+id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
