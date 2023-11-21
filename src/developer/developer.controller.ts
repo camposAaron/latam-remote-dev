@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { DeveloperService } from './developer.service';
 import { CreateDeveloperDto } from './dto/create-developer-dto';
@@ -19,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/commom/services/CloudinaryService';
 import { UpdateDeveloperDto } from './dto/update-developer.dto';
 import { ApiConsumes, ApiBody, ApiParam } from '@nestjs/swagger';
+import { PaginationDto } from 'src/commom/dto/pagination-dto';
 
 @ApiTags('Developer')
 @Controller('developer')
@@ -38,10 +40,16 @@ export class DeveloperController {
     return this.developerService.create(createDeveloperDto, id);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.developerService.findAll();
-  // }
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get('/postulation')
+  findAll(
+    @Query() pagination: PaginationDto,
+    @GetUser('id') id: number,
+  ) {
+    console.log("dasd")
+    return this.developerService.findAllPostulationByUserDeveloper(id, pagination.page);
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtGuard)

@@ -3,6 +3,9 @@ import { CreateDeveloperDto } from './dto/create-developer-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 import { UpdateDeveloperDto } from './dto/update-developer.dto';
+import { PaginateFunction, paginator } from 'src/commom/utils/pagination';
+
+const paginate: PaginateFunction = paginator({ perPage: 10 });
 
 @Injectable()
 export class DeveloperService {
@@ -136,8 +139,40 @@ export class DeveloperService {
     return userRest.Developer;
   }
 
-  findAll() {
-    return `This action returns all developer`;
+  async findAllPostulationByUserDeveloper(userId: number, page: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (user.role !== 'Developer')
+      throw { statusCode: 400, message: 'You are not a developer' };
+
+    return paginate(this.prismaService.postulation, {
+      where: {
+        developerId: user.developerId,
+      },
+      include: {
+        jobOffer: {
+          include: {
+            company: true,
+          },
+        },
+      },
+    });
+
+    // this.prismaService.postulation.findMany({
+    //   where: {
+    //     developerId: user.developerId,
+    //   },
+    //   include: {
+    //     developer: true,
+    //     jobOffer: {
+    //       include: {
+    //         company: true,
+    //       },
+    //     },
+    //   },
+    // });
   }
 
   async findOne(id: number) {
@@ -226,7 +261,7 @@ export class DeveloperService {
     await this.prismaService.developerSkill.createMany({
       data: skillsIds.map((skillId) => ({
         skillId,
-        developerId: id
+        developerId: id,
       })),
     });
 

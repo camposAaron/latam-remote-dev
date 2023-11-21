@@ -131,19 +131,6 @@ export class JobOfferService {
     filter: FilterReservationDto,
   ): Promise<PaginatedResult<JobOffer>> {
     let where: Prisma.JobOfferWhereInput = {};
-
-    // if (filter.skillsIds?.length > 0) {
-    //   where = {
-    //     state: 'Opened',
-    //     JobOfferSkill: {
-    //       some: {
-    //         skillId: {
-    //           in: filter.skillsIds,
-    //         },
-    //       },
-    //     },
-    //   };
-    // } else {
     where = {
       state: 'Opened',
       OR: [

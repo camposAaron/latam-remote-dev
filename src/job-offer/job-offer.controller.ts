@@ -52,6 +52,9 @@ export class JobOfferController {
     return this.jobOfferService.findOffersPublic(pagination.page, filter);
   }
 
+  
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.jobOfferService.findOne(+id);
@@ -90,4 +93,15 @@ export class JobOfferController {
   ) {
     return this.jobOfferService.createPostulation(createPostulationdto, id);
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Get('/postulation')
+  getDeveloperPostulation(
+    @Body() createPostulationdto: CreatePostulationDto,
+    @GetUser('id') id: number,
+  ) {
+    return this.jobOfferService.createPostulation(createPostulationdto, id);
+  }
+  
 }
