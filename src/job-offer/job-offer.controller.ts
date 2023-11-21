@@ -91,6 +91,4 @@ export class JobOfferController {
   ) {
     return this.jobOfferService.createPostulation(createPostulationdto, id);
   }
-
-  
 }

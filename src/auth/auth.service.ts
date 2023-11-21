@@ -5,6 +5,7 @@ import { IGrantedAccess } from './interfaces/Igranted-access';
 import { AuthDto, RegisterDto } from './dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as argon from 'argon2';
+import { ChangePaswwordDto } from './dtos/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,9 +31,11 @@ export class AuthService {
           isDeleted: true,
           Developer: {
             update: {
-              where: { User: {
-                id: userId,
-              } },
+              where: {
+                User: {
+                  id: userId,
+                },
+              },
               data: {
                 isDeleted: true,
               },
@@ -125,7 +128,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new BadRequestException('Usuario o contraseña incorrectos');
+      throw new BadRequestException('Usuarip no erxiste');
     }
 
     if (user.isDeleted) {
@@ -191,6 +194,7 @@ export class AuthService {
         role: registerDto.role,
       },
     });
+    
     const token = await this.signToken(newUser.id, newUser.email);
 
     return {
@@ -216,6 +220,32 @@ export class AuthService {
     });
 
     return token;
+  }
+  async changePassword(userId: number, changePasswordDto: ChangePaswwordDto) {
+    
+    
+    const user = await this.prisma.user.findUnique({ where: {
+      id: userId
+    }})
+    
+    const passwordMatch = await argon.verify(user.password, changePasswordDto.oldPassword)
+    
+    if (!passwordMatch) {
+      throw new BadRequestException('Usuario o contraseña incorrectos');
+    }
+
+    const hashedNewPassword = await argon.hash(changePasswordDto.newPassword);
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        password: hashedNewPassword
+      }
+    })
+
+    return 'Contraseña actualizada'
   }
 }
 

@@ -17,6 +17,7 @@ import { GetUser } from './decorator/get-user-decorator';
 import { JwtGuard } from './guard/jwt';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/commom/services/CloudinaryService';
+import { ChangePaswwordDto } from './dtos/change-password.dto';
 
 @ApiTags('Auth')
 @Controller('/auth')
@@ -78,4 +79,14 @@ export class AuthController {
     return response;
   }
 
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Post('/change-password')
+  async changePassword(
+    @Body() changePasswordDto: ChangePaswwordDto,
+    @GetUser('id', ParseIntPipe) id: number,
+  ) {
+    return this.authService.changePassword(id, changePasswordDto);
+  }
 }
