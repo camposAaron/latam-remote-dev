@@ -53,8 +53,6 @@ export class JobOfferController {
   }
 
   
-  @ApiBearerAuth()
-  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.jobOfferService.findOne(+id);
