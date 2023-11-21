@@ -5,6 +5,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePostulationDto } from './dto/create-postulation.dto';
 import { PaginationDto } from 'src/commom/dto/pagination-dto';
 import { FilterReservationDto } from './dto/filter-offers.dto';
+import { JobOffer, Prisma } from '@prisma/client';
+import {
+  PaginateFunction,
+  PaginatedResult,
+  paginator,
+} from 'src/commom/utils/pagination';
+
+const paginate: PaginateFunction = paginator({ perPage: 10 });
 
 @Injectable()
 export class JobOfferService {
@@ -88,72 +96,47 @@ export class JobOfferService {
   }
 
   async findOffersPublic(
-    pagination: PaginationDto,
+    page: number,
     filter: FilterReservationDto,
-  ) {
-    const { limit = 10, offset = 0 } = pagination;
-
-    const offers = await this.prismaService.jobOffer.findMany({
-      take: limit,
-      skip: offset,
-      where: {
-        OR: [
-          {
-            title: {
-              contains: filter.search || '', // Use filter.searchText if available
-              mode: 'insensitive',
-            },
+  ): Promise<PaginatedResult<JobOffer>> {
+    const where: Prisma.JobOfferWhereInput = {
+      state: 'Opened',
+      OR: [
+        {
+          title: {
+            contains: filter.search || '',
+            mode: 'insensitive',
           },
-          {
-            description: {
+        },
+        {
+          description: {
+            contains: filter.search || '',
+            mode: 'insensitive',
+          },
+        },
+        {
+          company: {
+            name: {
               contains: filter.search || '',
               mode: 'insensitive',
             },
           },
-          {
-            company: {
-              name: {
-                contains: filter.search || '',
-                mode: 'insensitive',
-              },
-            },
-          },
-        ],
-        state: 'Opened',
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        company: true,
-        JobOfferSkill: {
-          select: {
-            id: true,
-            skill: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
+        },
+      ],
+    };
+
+    return paginate(
+      this.prismaService.jobOffer,
+      {
+        where,
+        orderBy: {
+          createdAt: 'desc',
         },
       },
-    });
-
-    // if (filter.skillsIds) {
-    //  offers.filter((offer) => {
-    //     for (let skill of offer.JobOfferSkill) {
-    //       if (filter.skillsIds.includes(skill.skill.id)) {
-    //         return true;
-    //       }
-    //     }
-    //   });
-    // }
-
-    return {
-      data: offers,
-      total: offers.length,
-    };
+      {
+        page,
+      },
+    );
   }
 
   async findOne(id: number) {
@@ -291,7 +274,7 @@ export class JobOfferService {
         jobOffer: {
           include: {
             company: true,
-          }
+          },
         },
       },
     });
