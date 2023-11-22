@@ -3,7 +3,7 @@
 Job board designed for software developers
 
 ## Api documentation
-[Link text]([https://website-name.com](https://latam-remote-dev-2-dev-kgpt.1.us-1.fl0.io/docs)
+[Link text]((https://latam-remote-dev-2-dev-kgpt.1.us-1.fl0.io/docs)
 
 ## Installation
 
